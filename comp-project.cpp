@@ -7,6 +7,7 @@ using namespace std;
 
 int main() {
     int numStates, numSymbols;
+
     cout << "Enter number of states: ";
     cin >> numStates;
 
@@ -18,7 +19,6 @@ int main() {
     for (int i = 0; i < numSymbols; i++)
         cin >> symbols[i];
 
-    // Transition table: transitions[state][symbol] = next_state
     vector<map<char, int>> transitions(numStates);
     cout << "\nEnter transition table:\n";
     cout << "(Format: for each state, enter next state for each symbol)\n";
@@ -48,26 +48,39 @@ int main() {
         finalStates.insert(f);
     }
 
-    string input;
-    cout << "\nEnter input string: ";
-    cin >> input;
+    while (true) {
+        string input;
+        cout << "\nEnter input string (or type 'exit' to quit): ";
+        cin >> input;
 
-    // FSM processing
-    int currentState = startState;
-    for (char ch : input) {
-        if (transitions[currentState].find(ch) == transitions[currentState].end()) {
-            cout << "Invalid symbol '" << ch << "' encountered.\n";
-            cout << "String Rejected.\n";
-            return 0;
+        if (input == "exit")
+            break;
+
+        int currentState = startState;
+        bool invalid = false;
+
+        for (char ch : input) {
+            if (transitions[currentState].find(ch) == transitions[currentState].end()) {
+                cout << "Invalid symbol '" << ch << "' encountered.\n";
+                cout << "String Rejected.\n";
+                invalid = true;
+                break;
+            }
+            currentState = transitions[currentState][ch];
         }
-        currentState = transitions[currentState][ch];
+
+        if (invalid)
+            continue;
+
+        if (finalStates.count(currentState))
+            cout << "String Accepted! (ended in state " << currentState << ")\n";
+        else
+            cout << "String Rejected! (ended in state " << currentState << ")\n";
+
+        cout << "Final State reached: " << currentState << endl;
     }
 
-    if (finalStates.count(currentState))
-        cout << "✅ String Accepted! (ended in state " << currentState << ")\n";
-    else
-        cout << "❌ String Rejected! (ended in state " << currentState << ")\n";
-
+    cout << "\nProgram ended.\n";
     return 0;
 }
 
